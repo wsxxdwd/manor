@@ -1,0 +1,33 @@
+body {
+	font-family: 'Arial','Tahoma','Verdana','helvetica','microsoft yahei',"微软雅黑","SimHei","黑体",sans-serif;
+	color: #aaa;
+	font-size: 100%;
+	padding:50px;
+	margin: auto;
+	height:100%;
+	letter-spacing: .08em;
+}
+
+a {
+  color: #00B7FF;
+  cursor:pointer;
+}
+.pannnel{
+	width:250px;
+	height:100px;
+}
+#register{
+ display:none;;
+}
+.clear{
+	clear:both;
+}
+#footer{
+	margin-top:100px;
+	height:50px;
+	width:100%;
+}
+#footer p{
+	width:100%;
+	text-align:center;
+}

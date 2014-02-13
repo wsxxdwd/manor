@@ -1,0 +1,156 @@
+#header{
+	width:100%;
+	height:40px;
+	background:#aaa;
+	margin-bottom:20px;
+}
+.infoBar{
+	float:left;
+	min-width:12%;
+	height:40px;
+	line-height:40px;
+	border:#fff solid 1px;
+	text-indent:10px;
+}
+#nav{
+	float:left;
+	width:20%;
+	height:100%;
+}
+#nav li{
+	height:50px;
+	line-height:50px;
+	font-size:20px;
+	cursor:pointer;
+}
+#nav li:hover{
+	color:red;
+	height:48px;
+	border-bottom:2px red solid;
+}
+#main{
+	float:left;
+	width:80%;
+	height:100%;
+}
+#friendList{
+	width:300px;
+	min-height:100px;
+	margin:10px;
+	border:1px solid #000;
+}
+#friendList div{
+	display:block;
+	width:300px;
+	height:30px;
+	line-height:30px;
+	text-indent:10px;
+}
+.friendLink:hover{
+	color:red;
+	cursor:pointer;
+}
+#mail_page textarea{
+	width:90%;
+	height:150px;
+	resize:none;
+}
+.page{
+	display:none;
+}
+#mail_page .btn{
+	width:150px;
+}
+.second_nav{
+	float:left;
+}
+.second_nav li{
+	display:block;
+	width:150px;
+	background:#aaa;
+	height:50px;
+	line-height:50px;
+	text-indent:15px;
+	font-size:large;
+	border-bottom:2px #fff solid;
+	cursor:pointer;
+	margin-right:20px;
+}
+.second_nav li:hover{
+	margin-left:20px;
+	margin-right:0;
+	background:#ccc;
+}
+#manor_info,#field_info{
+	float:left;
+	width:550px;
+	height:400px;
+	margin-left:50px;
+	font-size:large;
+}
+#manor_page>h2,#field_page>h2{
+	color:red;
+}
+.buildingList{
+	position:relative;
+	width:200px;
+	height:300px;
+	float:left;
+	margin:10px;
+	border:#a0522d 1px solid;
+}
+.buildingList img{
+	width:180px;
+	height:180px;
+	margin:10px;
+}
+.buildingList .timer{
+	position:absolute;
+	top:10px;
+	left:10px;
+	width:180px;
+	height:180px;
+	line-height:180px;
+	font-size:100px;
+	text-align:center;
+	color:rgba(0,0,0,0.5)
+}
+.buildingList .info{
+	width:200px;
+	height:100px;
+}
+.buildingList .info p{
+	width:200px;
+	height:40px;
+	margin-top:5px;
+	line-height:40px;
+	text-align:center;
+}
+#item_list{
+	border:2px double #a0522d;
+	width:800px;
+	height:400px;
+	overflow:auto;
+}
+.item_box{
+	float:left;
+	position:relative;
+	width:98px;
+	height:98px;
+	border:1px solid #d2691e;
+	background:#cd852d;
+	line-height:98px;
+	text-align:center;
+	font-size:xx-large;
+}
+.item_box .item_num{
+	line-height:20px;
+	font-size:medium;
+	position:absolute;
+	bottom:5px;
+	right:5px;
+	color:red;
+}
+#tip-body{
+	font-size:20px;
+}

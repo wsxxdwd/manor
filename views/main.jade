@@ -1,0 +1,76 @@
+extends layout
+block scripts
+	link(rel='stylesheet', href='/stylesheets/main.css')
+	link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+	script(src="/javascripts/jquery.js")
+	script(src="/javascripts/bootstrap.js")
+	script(src="/socket.io/socket.io.js")
+	script(src="/javascripts/jquery.md5.js")
+	script(src="/javascripts/utils.js")
+	script(src="/javascripts/render.js")
+	script(src="/javascripts/game.js")
+	script(src="/javascripts/chat.js")
+	script(src="/javascripts/main.js")
+	script var uid = "#{uid}";
+block content
+	div#header
+		div.infoBar#username 用户名: <span>0</span>
+		div.infoBar#money 金龙币: <span>0</span>
+		div.infoBar#alignment 阵营: <span>0</span>
+		div.infoBar#team 队伍: <span>0</span>
+		div.infoBar <span></span>
+		div.infoBar <span></span>
+		div.infoBar#time 时间:<span>0</span>
+	button#logout 登出
+	p 你好<span id="name">#{name}</span>欢迎来到 #{title}
+	ul#nav.unstyled
+		li.left_nav 人物
+		li.left_nav#manor 领地
+		li.left_nav#field 封地
+		li.left_nav#item 物品
+		li.left_nav 队伍
+		li.left_nav#mail 邮件
+	div#main
+		div#mail_page.page
+			p 好友列表
+			div#friendList
+			p 邮件列表
+			table.table.table-bordered.table-hover#mail_table
+				thead
+					tr
+						th 时间
+						th 发件人
+						th 内容摘要
+				tbody
+			p 寄出新的邮件
+			p 收件人:<div id="mailTo">世界</div>
+			textarea(placeholder="邮件内容")
+			div#sendMail.btn.btn-primary 送出邮件
+		div#manor_page.page
+			h2 领地名称
+			ul.second_nav.unstyled#manor_nav
+				li(data-key="overview") 总览
+			div#manor_info
+		div#field_page.page
+			h2 封地名称
+			ul.second_nav.unstyled#field_nav
+				li(data-key="overview") 总览
+				li(data-key="buildings") 城镇建设
+				li(data-key="garrison") 城防
+				li(data-key="solider") 驻军
+				li(data-key="quest") 公告板
+			div#field_info
+		div#item_page.page
+			h2 物品列表
+			div#item_list
+				-for(var i = 0;i<32;i++)
+					div.item_box(data-index =i)
+	div.modal#tipBox
+		div.modal-header
+			a.close.close_tip(data-dismiss="modal") ×
+			h3#tip-header title
+		div.modal-body#tip-body
+			p content
+		div.modal-footer
+			a.btn.close_tip(href="#") 关闭
+			a.btn.btn-primary(href="#") 保存

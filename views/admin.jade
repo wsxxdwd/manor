@@ -1,0 +1,29 @@
+extends layout
+block scripts
+	script(src="/socket.io/socket.io.js")
+	script(src="/javascripts/jquery.js")
+	script(src="/javascripts/bootstrap.min.js")
+	link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+	link(rel='stylesheet', href='/stylesheets/admin.css')
+	script(src="/javascripts/jquery.md5.js")
+	script(src="/javascripts/admin.js")
+block content
+	h1= title
+	p #{title} 管理界面 
+	ul#nav.unstyled
+		li.left_nav#player 玩家
+		li.left_nav 物品
+		li.left_nav 领地
+		li.left_nav 建筑
+	div#main
+		h3 玩家
+		table.table.table-bordered.table-hover#info_table
+			thead
+				tr
+					th _id
+					th 用户名
+					th 密码
+			tbody
+		div#monitor
+	div.clear
+	

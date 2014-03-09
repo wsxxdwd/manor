@@ -81,7 +81,7 @@ function manor_page(id){
 			game.getPlayerInfo([game.manor.owner],function(owner){
 				game.manor.ownername = owner[0].username;
 				$("#manor_page h2").html(manor[0].name);
-				manor_info("overview");
+				manor_info("manor_overview");
 			});
 		});
 	}else{
@@ -93,12 +93,23 @@ function manor_info(key){
 	var manor = game.manor;
 	var ownername = game.manor.ownername;
 	switch(key){
-		case "overview":
+		case "manor_overview":
 			var option = {
-				name:manor.name,
+				manor:manor,
 				owner:ownername
 			};
-			$("#manor_info").html(render("manor_owner",option));
+			$("#manor_info").html(render("manor_overview",option));
+			break;
+		case "world":
+			
+			game.getManorInfo([game.player.manor],function(manor){
+				var option = {
+					location : game.player.location,
+					myManor : manor[0],
+					map:game.worldMap
+				};console.log(option)
+				$("#manor_info").html(render("worldMap",option));
+			});
 			break;
 	}
 }
@@ -124,10 +135,10 @@ function field_info(key){
 	switch(key){
 		case "overview":
 			var option = {
-				name:field.name,
+				field:field,
 				owner:holdername
 			};
-			$("#field_info").html(render("field_owner",option));
+			$("#field_info").html(render("field_overview",option));
 			break;
 		case "buildings":
 			var option ={

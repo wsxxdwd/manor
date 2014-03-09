@@ -1,26 +1,31 @@
 extends layout
 block scripts
+	link(rel='stylesheet', href='/stylesheets/index.css')
 	script(src="/javascripts/index.js")
-	script(src="/javascripts/jquery.js")
 	script(src="/javascripts/jquery.md5.js")
 block content
-	h1= title
-	p 欢迎来到 #{title}
-	#login.pannel
-		h2 登录
-		label(for="username") 用户名:
-		input#username
-		label(for="password") 密码:
-		input#password(type="password")
-		button#login_btn 进入游戏
-		a#to_register 去注册
-	#register.pannel
-		h2 注册
-		label(for="reg_username") 用户名:
-		input#reg_username
-		label(for="reg_password") 密码:
-		input#reg_password(type="password")
-		label(for="reg_password_c") 确认密码:
-		input#reg_password_c(type="password")
-		button#register_btn 注册用户
-		a#to_login 返回登录
+	#main
+		#outter
+			#login.pannel
+				h2 登录
+				label(for="username") 用户名:
+				.input_border
+					input#username
+				label(for="password") 密码:
+				.input_border
+					input#password(type="password")
+				div#login_btn 进入游戏
+				a#to_register 去注册
+			#register.pannel
+				h2 注册
+				label(for="reg_username") 用户名:
+				.input_border
+					input#reg_username
+				label(for="reg_password") 密码:
+				.input_border
+					input#reg_password(type="password")
+				label(for="reg_password_c") 确认密码:
+				.input_border
+					input#reg_password_c(type="password")
+				div#register_btn 注册用户
+				a#to_login 返回登录

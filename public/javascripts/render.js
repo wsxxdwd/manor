@@ -3,7 +3,24 @@ function render(template,option){
 	switch(template){
 		//封地总览
 		case "field_overview":
-			html = "<p>"+option.name+"资源总览</p>";
+			switch(option.field.type){
+				case 0:
+					var type = "荒野";
+					break;
+				case 1:
+					var type = "村庄";
+					break;
+				case 2:
+					var type = "城堡";
+					break;
+				case 3:
+					var type = "城镇";
+					break;
+			}
+			html = "<p>"+option.field.name+"资源总览</p>";
+			html += "<p>"+option.field.name+"是"+option.field.holdername+"的封地</p>";
+			html += "领地规模为:"+type+"</p>";
+			html += "<p>地图坐标:"+option.field.location+"</p>";
 			break;
 		//封地建筑列表
 		case "field_building":
@@ -29,7 +46,45 @@ function render(template,option){
 			break;
 		//领地总览
 		case "manor_overview":
-			html = "<p>"+option.name+"资源总览</p>";
+			html = "<p>"+option.manor.name+"资源总览</p>";
+			for(var v in option.manor.terrain){
+				var field = option.manor.terrain[v];
+				html += '<div class="fieldList" data="'+field.id+'">'+field.name+'</div>';
+			}
+			return html;
+			break;
+		//世界地图
+		case "worldMap":
+			html = '<div id="map">';
+			for(var i = 0;i < option.map.length;i++){
+				html += '<div class="mapRow">';
+				for(var j = 0;j < option.map[i].length;j++){
+					var field = option.map[i][j];
+					var type = "neutrality";
+					if(field&&typeof(field.id) != "undefined"){
+						
+						if(field.id.toString() == game.player.base){
+							type = "mine";
+						}else if(game.player.manor){
+							for(var k = 0;k < option.myManor.terrain.length;k++){
+								console.log(field.id.toString(),option.myManor.terrain[k].id);
+								if(field.id.toString() == option.myManor.terrain[k].id){
+									type = "friendly";
+								}
+							}
+						}
+						if(i == option.location[0]&&j == option.location[1]){
+							type += " current_place";
+						}
+						html += '<div class="mapUnit '+type+'" data="'+field.id+'">'+field.name+'</div>';
+					}else{
+						html += '<div class="mapUnit uncapture"></div>';
+					}
+				}
+				html += '</div>';
+			}
+			html += '</div>';
+			return html;
 			break;
 		case "item":
 			var box = $("#item_list").children();
@@ -47,6 +102,12 @@ function render(template,option){
 				var id = option.friends[i]._id
 				html += '<div data-id="'+id+'" class="friendLink">'+name+'</div>';
 			}
+			break;
+		//新手引导
+		case "newplayer":
+			html = '<p>勇敢的冒险者你好,欢迎来到这个新的大陆,您的用户名<span>'+option.name+'</span>将作为登录用户名,现在你需要决定游戏中角色的名字.</p>'
+			html += '<input type="text" placeholder="冒险者">';
+			html += '<div class="btn">确定</div>'
 			break;
 		/* case "mailList":
 			for(var i = 0; i<option.mails.length;i++){

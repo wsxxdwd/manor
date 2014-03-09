@@ -11,7 +11,8 @@ function Player(id,socket){
 		db.find("player",{_id:this.id},{password:0},function(data){
 			_this.so.emit("welcome",{info:data[0]});
 			_this.info = data[0];
-			
+			_this.so.emit("worldTime",{time:world.worldTime()});
+			_this.so.emit("worldMap",{map:world.map});
 		});
 	}
 	//玩家退出游戏
@@ -22,11 +23,15 @@ function Player(id,socket){
 			}
 		}
 	}
-	this.sendMail = function(msg,target){
+	this.sendMail = function(msg){
 		var listener;
 		var d = new Date();
 		var nowTime = d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate()+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds(); 
-		if(target == "world"){
+		if(_this.mailHistory.length >= 20){
+			_this.mailHistory.shift();
+		}
+		_this.info.mailHistory.push({time:nowTime,from:"我",content:msg});
+		/* if(target == "world"){
 			this.cost(5);
 			this.so.broadcast.emit("worldMsg",{msg:msg,from:this.id,time:nowTime});
 			logger.log(socket.id+" say to world : "+msg)
@@ -35,43 +40,30 @@ function Player(id,socket){
 				this.cost(5);
 				u.$player(target).so.emit("personalMsg",{msg:msg,from:this.id,time:nowTime});
 			}
-		}
-	}
+		}*/
+	} 
 	this.cost = function(num){
-		this.info.money -= num;
-		db.update("player",{_id:this.id},{money:this.info.money},function(res){
-			if(res){
-				_this.update("money");
-			}
-		});
+		if(this.info.money >= num){
+			this.info.money -= num;
+			return 1;
+		}else{
+			return 0;//金钱不足
+		}
 	}
 	this.earn = function(num){
 		this.info.money += num;
-		db.update("player",{_id:this.id},{money:this.info.money},function(res){
-			if(res){
-				_this.update("money");
-			}
-		});
+		return 1;
 	}
 	this.addItem = function(item,num){
 		for(var v in this.info.items){
 			if(this.info.items[v].id == item){
 				this.info.items[v].num += num;//原有物品直接增加数量
-				db.update("player",{_id:this.id},{items:this.info.items},function(res){
-					if(res){
-						_this.update("items");
-					}
-				});
 				this.update("items");
 				return 1;
 			}
 		}
-		this.info.items.push({id:item,num:num});
-		db.update("player",{_id:this.id},{items:this.info.items},function(res){
-			if(res){
-				_this.update("items");
-			}
-		});
+		this.info.items.push({id:item,num:num});//新增物品
+		return 1;
 	}
 	this.reduceItem = function(item,num){
 		for(var v = 0;v<this.info.items.length;v++){
@@ -79,11 +71,6 @@ function Player(id,socket){
 				//原有物品直接减去数量
 				if(this.info.items[v].num >= num){
 					this.info.items[v].num -= num;
-					db.update("player",{_id:this.id},{items:this.info.items},function(res){
-						if(res){
-							_this.update("items");
-						}
-					});
 					return 1;
 				}else{
 					console.log("数量不足");
@@ -94,7 +81,7 @@ function Player(id,socket){
 		console.log("没有物品");
 		return 0;//没有物品
 	}
-	this.update = function(){
+	this.sendUpdate = function(){
 		for(var v in arguments){
 			this.updateList.push(arguments[v]);
 		}
@@ -110,6 +97,43 @@ function Player(id,socket){
 	}
 	this.loop = function(){
 		
+	}
+	this.updatedb = function(param){
+		switch(param){
+			case "name":
+				db.update("player",{_id:this.id},{name:this.info.name},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了昵称")});
+			break;
+			case "manor":
+				db.update("player",{_id:this.id},{manor:this.info.manor},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了领地")});
+				break;
+			case "base":
+				db.update("player",{_id:this.id},{base:this.info.base},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了封地")});
+				break;
+			case "friends":
+				db.update("player",{_id:this.id},{friends:this.info.friends},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了好友信息")});
+				break;
+			case "money":
+				db.update("player",{_id:this.id},{money:this.info.money},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了金龙币")});
+				break;
+			case "alignment":
+				db.update("player",{_id:this.id},{alignment:this.info.alignment},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了阵营")});
+				break;
+			case "items":
+				db.update("player",{_id:this.id},{items:this.info.items},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了物品")});
+				break;
+			case "location":
+				db.update("player",{_id:this.id},{location:this.info.location},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了地点")});
+				break;
+			case "team":
+				db.update("player",{_id:this.id},{team:this.info.team},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了队伍")});
+				break;
+			case "leadership":
+				db.update("player",{_id:this.id},{leadership:this.info.leadership},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了统御值")});
+				break;
+			case "mailHistory":
+				db.update("player",{_id:this.id},{mailHistory:this.info.mailHistory},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了邮件历史")});
+				break;
+		}
 	}
 }
 module.exports = Player;

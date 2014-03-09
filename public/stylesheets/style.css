@@ -1,8 +1,7 @@
 body {
-	font-family: 'Arial','Tahoma','Verdana','helvetica','microsoft yahei',"微软雅黑","SimHei","黑体",sans-serif;
+	font-family: "微软雅黑",'Arial','Tahoma','Verdana','helvetica','microsoft yahei',"SimHei","黑体",'sans-serif';
 	color: #aaa;
 	font-size: 100%;
-	padding:50px;
 	margin: auto;
 	height:100%;
 	letter-spacing: .08em;
@@ -23,7 +22,8 @@ a {
 	clear:both;
 }
 #footer{
-	margin-top:100px;
+	position:absolute;
+	bottom:0;
 	height:50px;
 	width:100%;
 }

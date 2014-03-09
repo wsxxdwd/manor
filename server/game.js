@@ -5,21 +5,33 @@ var World = require("../server/world");
 var u = require("./utils");
 var crypto = require("crypto");
 function Game(){
+	this.status = 0;
 	playerList = new Array();
 	adminList = new Array();
+	var _this = this;
 	//初始化
 	this.init = function(){
+		db.find("item",{},function(items){
+			itemInfo = items;
+		});
+		db.find("building",{},function(buildings){
+			buildingInfo = buildings;
+		});
+		this.status = 1;
 		world = new World();
 		world.init();
 		logger.log("server on");
 		//世界滴答
-		var timer = setInterval(tick,5000);
+		worldTimer = setInterval(tick,5000);
 	};
 	this.addListener = function(io){
 		//连接
 		io.sockets.on('connection',function(socket){
 			//加入游戏
-			socket.on("join",function(data){
+			socket.on("playerLogin",function(data){
+				if(!_this.status){
+					return 0;
+				}
 				if(!u.$player(data._id)){
 					var newplayer = new Player(data._id,socket);
 					newplayer.init();
@@ -31,6 +43,9 @@ function Game(){
 			});
 			//管理员登陆
 			socket.on("adminLogin",function(data){
+				if(!_this.status){
+					return 0;
+				}
 				var inArray = false;
 				for(v in adminList){
 					if(adminList[v].id == socket.id){
@@ -45,28 +60,26 @@ function Game(){
 				}else{
 					logger.log(socket.id+" reconnect!");
 				}
+				socket.emit("adminWelcome",{name:socket.id});
 			});
-			//广播
-			socket.on("say_to_world",function(data){
-				for(var v in playerList){
-					if(playerList[v].so.id == socket.id){
-						playerList[v].sendMail(data.msg,"world");
-					}
+			//发送邮件
+			socket.on("sendMail",function(data){
+				if(!_this.status){
+					return 0;
 				}
-			});
-			//私人邮件
-			socket.on("say_to_player",function(data){
-				for(var v in playerList){
-					if(playerList[v].so.id == socket.id){
-						playerList[v].sendMail(data.msg,data.id);
-					}
-				}
+				u.$player_so(socket.id).sendMail(data.msg);
 			});
 			//查找信息(通过objectID)
 			socket.on("getter",function(data){
+				if(!_this.status){
+					return 0;
+				}
 				searchById(socket,data);
 			});
 			socket.on("completeQuest",function(data){
+				if(!_this.status){
+					return 0;
+				}
 				var quest = world.field(data.fieldId).quest;
 				var items = u.$player(data.playerId).info.items;
 				for(var i = 0;i<items.length;i++){
@@ -88,10 +101,16 @@ function Game(){
 			});
 			//游戏静态信息获取
 			socket.on("gameData",function(data){
+				if(!_this.status){
+					return 0;
+				}
 				checkupdate(socket,data.md5);
 			});
 			//丢失连接
 			socket.on("disconnect",function(){
+				if(!_this.status){
+					return 0;
+				}
 				for(var v in playerList){
 					if(playerList[v].so.id == socket.id){
 						playerList[v].quit();
@@ -103,6 +122,14 @@ function Game(){
 					}
 				}
 				logger.log(socket.id+" disconnect!");
+			});
+			//丢失连接
+			socket.on("shutdown",function(){
+				if(!_this.status){
+					return 0;
+				}
+				shutdown();
+				logger.log("管理员 "+socket.id+" 关闭了服务器");
 			});
 		});
 	}//end listener
@@ -138,19 +165,15 @@ function Game(){
 	}
 	//检查玩家游戏数据是否需要更新缓存
 	function checkupdate(socket,user_md5){
-		db.find("item",{},function(items){
-			db.find("building",{},function(buildings){
-				var gameData = {items:items,buildings:buildings};
-				var md5 = crypto.createHash("md5");
-				var server_md5 = md5.update(JSON.stringify(gameData));
-				server_md5 = server_md5.digest('hex');
-				if(server_md5 == user_md5){
-					socket.emit("gameData",{update:0});
-				}else{
-					socket.emit("gameData",{update:1,data:gameData});
-				}
-			});
-		});
+		var gameData = {items:items,buildings:buildings};
+		var md5 = crypto.createHash("md5");
+		var server_md5 = md5.update(JSON.stringify(gameData));
+		server_md5 = server_md5.digest('hex');
+		if(server_md5 == user_md5){
+			socket.emit("gameData",{update:0});
+		}else{
+			socket.emit("gameData",{update:1,data:gameData});
+		}
 	}
 	function randomQuest(){
 		var quests = [
@@ -160,10 +183,27 @@ function Game(){
 				requirement:"52ef8fd60163106814ff823d",
 				num:20,
 				reward:50
+			},
+			{
+				name:"南方的商人",
+				description:"南方来了个商人在城镇中大量收购小麦",
+				requirement:"52f395588d619f88084491e4",
+				num:30,
+				reward:50
 			}
 		];
 		var index = parseInt(Math.random()*quests.length);
 		return quests[index];
+	}
+	//终止游戏服务器
+	function shutdown(){
+		clearInterval(worldTimer);
+		for(var i = 0;i<world.fields.length;i++){
+			db.update("field",{_id:world.fields[i]._id},{buildings:world.fields[i].buildings},function(){
+				
+			});
+		}
+		console.log("update fields info")
 	}
 }
 module.exports = Game;

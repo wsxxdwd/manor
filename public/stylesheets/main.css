@@ -126,6 +126,46 @@
 	line-height:40px;
 	text-align:center;
 }
+.fieldList{
+	float:left;
+	margin:10px;
+	width:150px;
+	height:150px;
+	background:#aaa;
+	line-height:150px;
+	text-align:center;
+}
+#map{
+	width:100%;
+	height:100%;
+	border:1px #000 double;
+	overflow:auto;
+}
+.mapRow{
+	width:1000px;
+	height:50px;
+}
+.mapUnit{
+	width:48px;
+	height:48px;
+	float:left;
+	font-size:xx-small;
+}
+.neutrality{
+	border:1px red solid;
+}
+.mine{
+	border:1px green solid;
+}
+.friendly{
+	border: 1px blue solid;
+}
+.uncapture{
+	border:1px #aaa solid;
+}
+.current_place{
+	background: #ccc;
+}
 #item_list{
 	border:2px double #a0522d;
 	width:800px;

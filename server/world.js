@@ -3,8 +3,17 @@ var u = require("./utils");
 function World(){
 	this.name = "庄园:乱世";
 	this.time = 0;
+	this.map = [];
 	var _this = this;
 	//世界时间
+	
+	this.init = function(){
+		this.getWorldInfo();
+		db.find("field",{},function(fields){
+			_this.fields = fields;
+			console.log("world init");
+		});	
+	}
 	this.worldTime = function(time){
 		if(typeof(time) == "undefined"){
 			return tran(this.time);
@@ -26,20 +35,6 @@ function World(){
 			}
 		}
 	}
-	this.init = function(){
-		this.getWorldTime();
-		db.find("field",{},function(fields){
-			_this.fields = fields;
-			for(var v = 0; v < fields.length;v++){
-				var buildingList = [];
-				for(var i = 0;i<fields[v].buildings.length;i++){
-					buildingList.push(_this.fields[v].buildings[i].id);
-				}
-				getbuildingInfo(v,buildingList);
-			}
-		});
-		console.log("world init")
-	}
 	this.field = function(id){
 		for(var i = 0;i<this.fields.length;i++){
 			if(this.fields[i]._id = id){
@@ -47,21 +42,11 @@ function World(){
 			}
 		}
 	}
-	function getbuildingInfo(index,list){
-		db.find("building",{_id:{$in:list}},function(buildings){
-				for(var i = 0; i < buildings.length;i++){
-				for(var j = 0;j < _this.fields[index].buildings.length;j++){
-					if(_this.fields[index].buildings[j].id == buildings[i]._id){
-						_this.fields[index].buildings[j].info = buildings[i];
-					}
-				}
-			}
-		});
-	}
-	this.getWorldTime = function(){
+	this.getWorldInfo = function(){
 		db.find("world",{},function(data){
 			var world = data[0];
 			_this.time = world.time;
+			_this.map = world.map;
 		});
 	}
 	//世界循环
@@ -69,120 +54,78 @@ function World(){
 		io.sockets.emit("worldTime",{time:this.worldTime()});
 		buildingEvent();
 	}
+	
 	function buildingEvent(){
 		for(var i = 0;i<_this.fields.length;i++){
-			if(_this.fields[i].holder){
-				var change = 0;
-				(function(i){db.find("player",{_id:_this.fields[i].holder},function(holder){
-					_this.tempItems = holder[0].items;
-					for(var j = 0;j<_this.fields[i].buildings.length;j++){
-						var building = _this.fields[i].buildings[j];
-						//执行生产命令
-						if(produce(holder[0]._id,i,j)){
-							change = 1;
-						}
-					}
-					if(change){
-						db.update("player",{_id:holder[0]._id},{items:_this.tempItems},function(data){console.log("已离线更新生成列表--"+holder[0].username)});
-					}
-					db.update("field",{_id:_this.fields[i]._id},{buildings:_this.fields[i].buildings},function(){});
-				});})(i);
-			}
-		}
-		function produce(player,i,j){
-			var building = _this.fields[i].buildings[j];
-			var func = building.info.func;
-			var material = building.info.material;
-			var produceNum = building.info.ability.num;
-			var reduce = material.id?material.id.toString():"";
-			var needNum = material.need;
-			var add = "";
-			switch(func){
-				case "bread":
-					add = "52ef8fd60163106814ff823d";
-					break;
-				case "wheat":
-					add = "52f395588d619f88084491e4";
-					break;
-			}
-			if(u.$player(player)){//玩家在线,直接改变并通知
-				if(reduce){
-					if(building.timer == 0){
-						if(u.$player(player).reduceItem(reduce,needNum)){
-							building.timer ++;
-						}else{
-							//console.log("原料不足,无法开始生产")
-						}
-					}else if(building.timer >= building.info.ability.time){
-						u.$player(player).addItem(add,produceNum);
-						logger.log(u.$player(player).info.username+"生成了"+add);
-						building.timer = 0;
-					}else{
-						building.timer ++;
-					}
-					return 0;
-				}else{
-					if(building.timer >= building.info.ability.time){
-						u.$player(player).addItem(add,produceNum);
-						building.timer = 0;
-						logger.log(u.$player(player).info.username+"生成了"+add);
-						return 0;
-					}
-					building.timer ++;
-					return 0;
-				}
-			}else{
-				if(reduce){
-					if(building.timer == 0){
-						for(var i =0; i<_this.tempItems.length;i++){
-							if(_this.tempItems[i].id == reduce){
-								//console.log(_this.tempItems[i].num,needNum);
-								if(_this.tempItems[i].num >= needNum){
-									_this.tempItems[i].num -= needNum;
-									//console.log("原料充足,开始生产")
-									building.timer ++;
-									return 1;
-								}else{
-									//console.log("原料不足");
+			(function(x){
+				db.find("player",{_id:_this.fields[x].holder},function(holder){
+					var holder = holder[0];
+					for(var j = 0;j<_this.fields[x].buildings.length;j++){
+						var status = _this.fields[x].buildings[j].status;
+						var timer = _this.fields[x].buildings[j].timer;
+						building = u.$building(_this.fields[x].buildings[j].id);
+						if(status == 'wait'){
+							//默认生成条件满足
+							var condition = 1;
+							if(building.material.id){
+								//需要原料产,判断原料是否充足
+								condition = 0;
+								for(var k = 0;k<holder.items.length;k++){
+									if(holder.items[k].id == building.material.id){
+										if(holder.items[k].num >= building.material.need){
+											//条件满足,消耗物品
+											holder.items[k].num -= building.material.need;
+											var player;
+											if(player = u.$player(player)){
+												//玩家在线,更新玩家对象并发送通知
+												player.reduceItem(building.material.id,building.material.need);
+												player.sendUpdate('items');
+												//发送建筑状态改变信息
+												player.so.emit("buildingStatuschange",{id:_this.fields[x].buildings[j]._id,status:"work"});
+											}
+											//更新数据库
+											db.update("player",{_id:holder._id},{items:holder.items},function(){
+												logger.log(holder.name+"的建筑"+building.name+"消耗了"+building.material.need+"单位的"+$item(building.material.id).name);
+											});
+											condition = 1;
+										}
+									}
 								}
 							}
-						}
-						//console.log("没有原料");
-					}else if(building.timer >= building.info.ability.time){
-						for(var j =0; j<_this.tempItems.length;j++){
-							if(_this.tempItems[j].id == add){
-								_this.tempItems[j].num += produceNum;
-								building.timer = 0;
-								return 1;//添加完成
+							if(condition){
+								_this.fields[x].buildings[j].status = 'work';
+							}
+						}else if(status == 'work'){
+							if(timer >= building.ability.time){
+								//生产完毕
+								var flag = 1;
+								for(var l = 0;l<holder.items.length;l++){
+									if(holder.items[l].id == building.ability.id){
+										holder.items[l].num += building.ability.num;
+										flag = 0;
+									}
+								}
+								if(flag){
+									holder.items.push({id:building.ability.id,num:building.ability.num});
+								}
+								var player;
+								if(player = u.$player(player)){
+									//玩家在线,更新玩家对象并发送通知
+									player.addItem(building.ability.id,building.ability.num);
+									player.sendUpdate('items');
+									//发送建筑状态改变信息
+									player.so.emit("buildingStatuschange",{id:_this.fields[x].buildings[j]._id,status:"wait"});
+								}
+								//更新数据库
+								db.update("player",{_id:holder._id},{items:holder.items},function(){
+									logger.log(holder.name+"的建筑"+building.name+"生产了"+building.ability.num+"单位的"+$item(building.ability.id).name);
+								});
+								_this.fields[x].buildings[j].status = 'wait';
 							}
 						}
-						_this.tempItems.push({id:add,num:produceNum});
-						building.timer = 0;
-						return 1;//新增完成
-					}else{
-						building.timer ++;
 					}
-					return 0;
-				}else{
-					//console.log("不需要原料,直接开始生产");
-					if(building.timer >= building.info.ability.time){
-						for(var j =0; j<_this.tempItems.length;j++){
-							if(_this.tempItems[j].id == add){
-								//console.log(_this.tempItems[j].num);
-								_this.tempItems[j].num += produceNum;
-								//console.log(_this.tempItems[j].num);
-								building.timer = 0;
-								return 1;//添加完成
-							}
-						}
-						_this.tempItems.push({id:add,num:produceNum})
-						building.timer = 0;
-						return 1;//新增完成
-					}
-					building.timer ++;
-					return 0;
-				}//end add without meterial
-			}
+				});
+			})(i)//end of find player
 		}
 	}
 }

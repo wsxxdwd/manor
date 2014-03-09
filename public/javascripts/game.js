@@ -4,6 +4,7 @@ function Game(){
 	this.player;
 	this.field;
 	this.manor;
+	this.worldMap;
 	var mail = new Chat();
 	this.init = function(){
 		if(window.localStorage){
@@ -32,15 +33,26 @@ function Game(){
 		});
 		//服务器欢迎信息
 		socket.on("welcome",function(data){
-			game.player = data.info;
-			$("#username span").html(game.player.username);
-			$("#money span").html(game.player.money);
-			$("#alignment span").html(game.player.alignment);
-			$("#team span").html(game.player.team.length+"/"+game.player.leadership);
-			//showMsg("获取角色信息成功","<p>欢迎来到您的庄园</p>");
+			_this.player = data.info;
+			if(!_this.player.name){
+				$("#username span").html(_this.player.username);
+				$("#money span").html(_this.player.money);
+				$("#alignment span").html(_this.player.alignment);
+				$("#team span").html(_this.player.team.length+"/"+_this.player.leadership);
+				//showMsg("获取角色信息成功","<p>欢迎来到您的庄园</p>");
+			}else{
+				var option = {
+					name:_this.player.username
+				}
+				showMsg("欢迎新的冒险者加入到游戏",render("newplayer",option));
+			}
 		});
 		socket.on("update",function(list){
 			updateInfo(list);
+		});
+		//世界地图
+		socket.on("worldMap",function(data){
+			_this.worldMap = data.map;
 		});
 		//获取游戏数据
 		socket.on("gameData",function(data){

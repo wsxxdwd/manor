@@ -39,7 +39,7 @@ var ItemSchema= new Schema({
 	,price		: Number
 	,description: String
 	,type		: String
-	,value		: [{type: String,
+	,effect		: [{type: String,
 					val : Number
 					}]
 });
@@ -59,6 +59,7 @@ var FieldSchema= new Schema({
 	,location	:Array
 	,buildings	: [{
 		id		:String
+		,status	:String
 		,timer	:Number
 	}]
 	,garrison	: Number
@@ -90,18 +91,20 @@ var BuildingSchema = new Schema({
 	,price			: Number
 	,constractTime	: Number
 	,description	: String
-	,func			: String
+	
 	,material		: {
 						id:ObjectId,
 						need:Number
 						}
 	,ability		: {
 						time:Number,
+						id:String,
 						num :Number
 						}
 });
 var WorldSchema = new Schema({
-	 time			: Number
+	  time			: Number
+	 ,map			: Array
 });
 var UnitNameSchema = {
 	 xing : String
@@ -287,6 +290,19 @@ exports.update = function(){
 	var change = arguments[2];//将修改的参数和值
 	var callback = arguments[3];
 	modal[obj].update(condition,{$set:change},{multi:true},function(err,docs){ 
+		if(docs){
+			callback(docs);
+		}else{
+			callback(0);
+		}
+	});
+}
+exports.unset = function(){
+	var obj = arguments[0];
+	var condition = arguments[1];//目标找寻条件
+	var change = arguments[2];//将修改的参数和值
+	var callback = arguments[3];
+	modal[obj].update(condition,{$unset:change},{multi:true},function(err,docs){ 
 		if(docs){
 			callback(docs);
 		}else{

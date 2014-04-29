@@ -1,7 +1,10 @@
-function showMsg(header,body){
-	$("#tip-header").html(header)
-	$("#tip-body").html(body);
-	$("#tipBox").modal();
+function showMsg(type,header,option){
+	var html = '';
+	switch(type){
+		case 'tip':
+			
+			break;
+	}
 }
 function e2c(type,en){
 	var dictionary = {
@@ -23,6 +26,14 @@ function $item(id){
 	for(var i = 0; i<game.gameData.items.length;i++){
 		if(game.gameData.items[i]._id == id){
 			return game.gameData.items[i];
+		}
+	}
+}
+function imgRender(target){
+	var divs = $(target).find("div");
+	for(var i = 0;i < divs.length;i++){
+		if($(divs[i]).data("src")){
+			$(divs[i]).prepend($(game.images[$(divs[i]).data("src")]).clone());
 		}
 	}
 }

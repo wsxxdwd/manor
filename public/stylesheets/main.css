@@ -1,196 +1,871 @@
-#header{
+*{
+	-webkit-user-select:none;
+	-moz-user-select:none;
+}
+body,html{
+	width:100%;
+	height:100%;
+	background:#000;
+	overflow:hidden;
+}
+#mian img{
+	position:absolute;
+}
+.gameLayer{
+	width:1366px;
+	height:635px;
+	margin:auto;
+	overflow:hidden;
+}
+#loadingMessage{
+	width:100%;
+	height:50px;
+	text-align:center;
+	line-height:50px;
+	font-size:30px;
+	color:#fff;
+	margin-top:200px;
+}
+#info{
 	width:100%;
 	height:40px;
-	background:#aaa;
-	margin-bottom:20px;
-}
-.infoBar{
-	float:left;
-	min-width:12%;
-	height:40px;
+	text-align:center;
 	line-height:40px;
-	border:#fff solid 1px;
-	text-indent:10px;
-}
-#nav{
-	float:left;
-	width:20%;
-	height:100%;
-}
-#nav li{
-	height:50px;
-	line-height:50px;
 	font-size:20px;
-	cursor:pointer;
+	color:#fff;
+	margin-top:200px;
 }
-#nav li:hover{
-	color:red;
-	height:48px;
-	border-bottom:2px red solid;
+#gameScreen{
+	background:#fff;
 }
 #main{
-	float:left;
-	width:80%;
-	height:100%;
+	position:relative;
+	width:100%;
+	height:635px;
+	overflow:hidden;
 }
-#friendList{
-	width:300px;
-	min-height:100px;
-	margin:10px;
-	border:1px solid #000;
+#main_screen{
+	position:absolute;
+	width:1366px;
+	height:550px;
+	top:0;
+	left:0;
 }
-#friendList div{
+#main_nav{
+	position:absolute;
+	width:1295px;
+	top:538px;
+	left:38px;
+	height:81px;
+	overflow:hidden;
+}
+/* 背景图片 */
+.panel_bg{
+	position:absolute;
 	display:block;
-	width:300px;
+	width:1175px;
+	top:25px;
+}
+#field_bg{
+	left:196px;
+}
+#player_bg{
+	left:196px;
+}
+#team_bg{
+	left:30px;
+}
+#mail_bg{
+	left:240px;
+}
+#items_bg{
+	left:30px;
+}
+#record_bg{
+	left:280px;
+	top:48px;
+}
+#garrison_bg{
+	position:absolute;
+	left:320px;
+	top:43px;
+}
+#hall_bg{
+	position:absolute;
+	left:25px;
+}
+.nav_btn{
+	height:81px;
+	width:215px;
+	float:left;
+	cursor:pointer;
+	position:relative;
+}
+.nav_btn img{
+	display:block;
+	width:215px;
+	height:81px;
+	position:absolute;
+}
+#back{
+	position:absolute;
+	top:470px;
+	left:40px;
+}
+#world_time div{
+	position:absolute;
+	display:block;
+	font-size:16px;
+	width:215px;
+	height:81px;
+	line-height:81px;
+	text-align:center;
+	color:#fff;
+}
+/* world map */
+.mapCanvas{
+	position:absolute;
+	width:1300px;
+	height:500px;
+	margin-top:33px;
+	margin-left:33px;
+}
+
+/* field */
+#edit_description{
+	position:absolute;
+	left:588px;
+	top:80px;
+}
+#field_info{
+	position:absolute;
+	top:20px;
+	left:55px;
+	line-height:30px;
+	font-size:20px;
+	color:#fff
+}
+#menu_list{
+	position:absolute;
+	left:33px;
+	top:43px;
+}
+.menu_btn{
+	width:233px;
+	height:64px;
+	cursor:pointer;
+}
+.menu_btn img{
+	position:absolute;
+}
+.menu_btn span{
+	position:absolute;
+	display:block;
+	width:100%;
+	height:64px;
+	line-height:64px;
+	text-align:center;
+	color:#fff;
+	text-shadow:#000 1px 1px 1px;
+	font-size:18px;
+}
+#info_screen{
+	position:absolute;
+	left:275px;
+	top:43px;
+	width:770px;
+	height:470px;
+}
+#info_screen *{
+	color:#fff;
+	font-size:15px;
+	margin:5px;
+	text-shadow:#000 1px 1px 1px;
+}
+#info_screen .title{
+	font-size:30px;
+	width:700px;
 	height:30px;
 	line-height:30px;
-	text-indent:10px;
+	margin-left:10px;
 }
-.friendLink:hover{
-	color:red;
+#info_screen .sub_title{
+	font-size:18px;
+	width:700px;
+	height:25px;
+	line-height:25px;
+	margin-left:30px;
+}
+#info_screen .text{
+	font-size:15px;
+	line-height:20px;
+	margin-left:30px;
+}
+.text span{
+	text-decoration:underline;
+	color:#F00056!important;
 	cursor:pointer;
 }
-#mail_page textarea{
-	width:90%;
-	height:150px;
-	resize:none;
+.text span:active{
+	color:#F20C00!important;
 }
-.page{
-	display:none;
+
+.text img{
+	position:absolute;
+	top:0;
+	left:0;
 }
-#mail_page .btn{
-	width:150px;
+.text .list{
+	position:absolute;
+	top:81px;
+	left:50px;
+	width:283px;
+	height:376px;
+	overflow-x:hidden;
+	overflow-y:auto;
+	padding-top:6px;
+	padding-bottom:6px;
 }
-.second_nav{
+.text_min  .list{
+	height:180px;
+	width:265px;
+	top:50px;
+	left:35px;
+}
+.text .list .unitInfo{
 	float:left;
+	height:36px;
+	line-height:36px;
+	font-size:20px;
+	color:#19010e;
+	width:251px;
+	position:relative;
+	cursor:pointer;
 }
-.second_nav li{
-	display:block;
-	width:150px;
-	background:#aaa;
+.text .list .info_text{
+	float:left;
+	height:36px;
+	line-height:36px;
+	font-size:20px;
+	color:#fff;
+	width:251px;
+	position:relative;
+}
+#lansquenet{
+	position:absolute;
+	left:280px;
+	top:43px;
+	width:300px;
+	height:420px;
+}
+#vistor{
+	position:absolute;
+	left:670px;
+	top:43px;
+	width:300px;
+	height:420px;
+}
+/*城防*/
+#garrison_title{
+	position:absolute;
+	left:350px;
+	top:60px;
+	font-size:25px;
+	color:#c59002;
+	text-shadow:#000 1px 1px 1px;
+}
+#garrison_text{
+	position:absolute;
+	left:355px;
+	top:147px;
+	width:600px;
+	line-height:25px;
+	font-size:20px;
+	color:#fff;
+}
+#garrisonList{
+	position:absolute;
+	left:350px;
+	top:210px;
+	width:306px;
+	height:241px;
+}
+#teamList_min{
+	position:absolute;
+	left:680px;
+	top:210px;
+	width:306px;
+	height:241px;
+}
+#get_solider{
+	position:absolute;
+	top:460px;
+	left:550px;
+}
+#give_solider{
+	position:absolute;
+	top:460px;
+	left:880px;
+}
+#unitList{
+	position:absolute;
+	left:360px;
+	top:200px;
+	width:300px;
+	height:220px;
+	border:2px #fff solid;
+	overflow-y:scroll;
+	overflow-x:hidden;
+}
+#playerInfo{
+	position:absolute;
+	left:777px;
+	top:43px;
+	width:403px;
+	height:460px;
+}
+#playerInfo img{
+	position:absolute;
+	left:0;
+	top:0;
+}
+#playerInfo_container{
+	position:absolute;
+	width:403px;
+	height:410px;
+	left:0;
+	top:50px;
+}
+#playerInfo .param{
+	float:left;
+	height:30px;
+	width:80px;
+	line-height:30px;
+	margin-left:50px;
+	font-size:20px;
+	color:#fff;
+	text-shadow:#000 1px 1px 1px;
+}
+#playerInfo .value{
+	float:left;
+	min-height:30px;
+	width:200px;
+	line-height:30px;
+	margin-left:20px;
+	font-size:20px;
+	color:#19010e;
+	text-shadow:#000 1px 1px 1px;
+}
+#playerInfo p{
+	float:left;
+	height:30px;
+	width:300px;
+	line-height:30px;
+	margin-left:50px;
+	font-size:20px;
+	color:#666;
+}
+#teamInfo{
+	position:absolute;
+	left:330px;
+	top:43px;
+	width:300px;
+	height:400px;
+}
+#teamList{
+	position:absolute;
+	left:690px;
+	top:43px;
+	width:300px;
+	height:420px;
+}
+#quarter{
+	position:absolute;
+	left:555px;
+	top:425px;
+}
+#detail_box{
+	position:absolute;
+	width:234px;
+	height:466px;
+	top:43px;
+	left:1060px;
+}
+#detail_title{
+	width:100%;
+	text-align:center;
 	height:50px;
 	line-height:50px;
-	text-indent:15px;
-	font-size:large;
-	border-bottom:2px #fff solid;
-	cursor:pointer;
-	margin-right:20px;
+	font-size:30px;
+	color:#19010e;
 }
-.second_nav li:hover{
-	margin-left:20px;
-	margin-right:0;
-	background:#ccc;
-}
-#manor_info,#field_info{
-	float:left;
-	width:550px;
-	height:400px;
-	margin-left:50px;
-	font-size:large;
-}
-#manor_page>h2,#field_page>h2{
-	color:red;
-}
-.buildingList{
-	position:relative;
-	width:200px;
-	height:300px;
-	float:left;
-	margin:10px;
-	border:#a0522d 1px solid;
-}
-.buildingList img{
-	width:180px;
-	height:180px;
-	margin:10px;
-}
-.buildingList .timer{
+#detail_box *{
 	position:absolute;
-	top:10px;
-	left:10px;
-	width:180px;
-	height:180px;
-	line-height:180px;
-	font-size:100px;
-	text-align:center;
-	color:rgba(0,0,0,0.5)
 }
-.buildingList .info{
-	width:200px;
-	height:100px;
+#detail_img{
+	top:60px;
+	left:40px;
+	width:154px;
+	height:154px;
 }
-.buildingList .info p{
-	width:200px;
-	height:40px;
-	margin-top:5px;
-	line-height:40px;
-	text-align:center;
-}
-.fieldList{
-	float:left;
-	margin:10px;
-	width:150px;
-	height:150px;
-	background:#aaa;
-	line-height:150px;
-	text-align:center;
-}
-#map{
+#detail_img img{
 	width:100%;
-	height:100%;
-	border:1px #000 double;
-	overflow:auto;
 }
-.mapRow{
-	width:1000px;
-	height:50px;
-}
-.mapUnit{
-	width:48px;
-	height:48px;
-	float:left;
-	font-size:xx-small;
-}
-.neutrality{
-	border:1px red solid;
-}
-.mine{
-	border:1px green solid;
-}
-.friendly{
-	border: 1px blue solid;
-}
-.uncapture{
-	border:1px #aaa solid;
-}
-.current_place{
-	background: #ccc;
-}
-#item_list{
-	border:2px double #a0522d;
-	width:800px;
-	height:400px;
-	overflow:auto;
-}
-.item_box{
-	float:left;
-	position:relative;
-	width:98px;
-	height:98px;
-	border:1px solid #d2691e;
-	background:#cd852d;
-	line-height:98px;
-	text-align:center;
-	font-size:xx-large;
-}
-.item_box .item_num{
+#detail_box  #description{
+	left:18px;
+	top:225px;
+	font-size:15px;
+	width:200px;
 	line-height:20px;
-	font-size:medium;
-	position:absolute;
-	bottom:5px;
-	right:5px;
-	color:red;
+	color:#19010e;
 }
-#tip-body{
+#detail_box  #description span{
+	color:#fff;
+	text-shadow:#000 1px 1px 1px;
+}
+.detail_btn_right{
+	position:absolute;
+	bottom:20px;
+	right:7px;
+}
+.detail_btn_left{
+	position:absolute;
+	bottom:20px;
+	right:118px;
+}
+.small_btn{
+	width:109px;
+	height:37px;
+}
+.small_btn *{
+	position:absolute;
+	margin:0!important;
+}
+.small_btn .innerText{
+	display:block;
+	width:109px;
+	height:37px;
+	line-height:37px;
+	text-align:center;
+	color:#fff;
+	text-shadow:#000 1px 1px 1px;
 	font-size:20px;
+	cursor:pointer;
+}
+/* 城镇建设 */
+.building{
+	width:148px;
+	height:210px;
+	float:left;
+	margin-left:36px;
+	margin-top:12px;
+	cursor:pointer;
+}
+.building img{
+	position:absolute;
+}
+.buildingInfo{
+	width:148px;
+	position:absolute;	
+}
+.buildingName{
+	float:left;
+	width:148px;
+	height:30px;
+	line-height:30px;
+	font-size:20px!important;
+	text-align:center;
+	color:#fff;
+}
+.workerList{
+	float:left;
+	margin-top:10px;
+	margin-left:10px;
+	width:128px;
+	height:170px;
+	color:#aaa;
+}
+.materials{
+	float:left;
+	margin-top:10px;
+	margin-left:10px;
+	width:128px;
+	height:135px;
+	color:#aaa;
+	font-size:15px;
+}
+.construct{
+	width:148px;
+	height:20px;
+	float:left;
+	text-align:center;
+	font-size:20px;
+	color:#c59002;
+	cursor:pointer;
+}
+/* 公告板 */
+#quest_panel{
+	position:absolute;
+	left:275px;
+	top:43px;
+	width:970px;
+	height:470px;
+}
+.quest{
+	width:181px;
+	height:231px;
+	float:left;
+	margin-left:16px;
+	margin-top:12px;
+	position:relative;
+}
+.quest img{
+	position:absolute;
+}
+.questInfo{
+	width:151px;
+	height:220px;
+	left:15px;
+	position:absolute;	
+}
+.questName{
+	float:left;
+	width:100%;
+	height:30px;
+	margin-top:20px;
+	line-height:30px;
+	font-size:20px;
+	text-align:center;
+	color:#c59002;
+}
+.qusstDescription{
+	float:left;
+	font-size:16px;
+	width:100%;
+	height:140px;
+	color:#ccc;
+}
+.qusstDescription span{
+	color:#fff;
+}
+.completeQuest{
+	float:right;
+	color:#c59002;
+	font-size:18px;
+	margin-right:20px;
+	cursor:pointer;
+}
+/* 物品列表界面 */
+#money{
+	position:absolute;
+	left:48px;
+	top:43px;
+	font-size:25px;
+	color:#fff;
+	text-shadow:#000 1px 1px 1px;
+}
+#money span{
+	color:#c59002;
+}
+#listBox{
+	position:absolute;
+	width:750px;
+	height:480px;
+	left:290px;
+	top:43px;
+}
+#listBox .box{
+	position:relative;
+	width:120px;
+	height:120px;
+	float:left;
+	cursor:pointer;
+}
+#listBox .box .box_bg img,#listBox .box .item img{
+	width:120px;
+}
+#listBox .box .box_bg,#listBox .box .item{
+	position:absolute;
+	bottom:0;
+	left:0;
+	color:#fff;
+	text-shadow:#000 1px 1px 1px;
+	width:100%;
+	line-height:30px;
+	text-align:center;
+	font-size:12px;
+}
+#bigText{
+	position:absolute;
+	top:80px;
+	height:396px;
+	text-indent:30px;
+	color:#333;
+}
+.land{
+	left:320px;
+	width:600px;
+}
+.manor{
+	left:320px;
+	width:900px;
+	height:200px!important;
+}
+.badage{
+	left:750px;
+	width:500px;
+}
+.live{
+	left:320px;
+	width:500px;
+}
+/* 邮件界面 */
+#mail_panel{
+	position:absolute;
+	width:820px;
+	height:480px;
+	left:272px;
+	top:43px;
+}
+#mail_panel label{
+	display:block;
+	float:left;
+	margin-left:40px;
+	margin-bottom:0;
+	height:30px;
+	line-height:30px;
+	font-size:18px;
+	color:#c59002;
+	text-shadow:#000 1px 1px 1px;
+}
+#mail_panel .val{
+	float:left;
+	width:200px;
+	height:30px;
+	line-height:30px;
+	margin-left:20px;
+	margin-right:470px;
+	font-size:18px;
+	color:#fff;
+	text-shadow:#000 1px 1px 1px;
+}
+#reciver{
+	float:left;
+	width:200px;
+	height:30px;
+	line-height:30px;
+	margin-left:20px;
+	margin-right:470px;
+	font-size:18px;
+	background:none;
+	border:none;
+	outline:none;
+	color:#333;
+	text-shadow:#000 1px 1px 1px;
+}
+#mail_title{
+	float:left;
+	width:500px;
+	height:30px;
+	line-height:30px;
+	margin-left:20px;
+	margin-right:50px;
+	font-size:16px;
+	color:#666;
+	background:none;
+	border:none;
+	outline:none;
+}
+#mail_content{
+	float:left;
+	width:790px;
+	height:330px;
+	margin-left:30px;
+	margin-top:20px;
+	background:rgba(255,255,255,0.3);
+	border:none;
+	outline:none;
+	resize:none;
+	line-height:20px;
+	font-size:16px;
+	color:#333;
+	padding:10px;
+}
+#mail_content_min{
+	float:left;
+	width:790px;
+	height:200px;
+	margin-left:30px;
+	margin-top:20px;
+	line-height:20px;
+	font-size:16px;
+	color:#333;
+}
+#reply_mail{
+	float:left;
+	width:790px;
+	height:100px;
+	line-height:20px;
+	font-size:16px;
+	margin-left:30px;
+	margin-top:10px;
+	border:none;
+	outline:none;
+	resize:none;
+	background:rgba(255,255,255,0.3);
+	color:#333;
+	padding:10px;
+}
+#mailList{
+	position:absolute;
+	margin-top:36px;
+	margin-left:40px;
+	width:765px;
+	height:366px;
+}
+.mailFeed{
+	float:left;
+	height:40px;
+	width:100%;
+	line-height:40px;
+	font-size:18px;
+	color:#333;
+	border-bottom:2px solid #c59002;
+	cursor:pointer;
+}
+.mailFeed:hover{
+	color:#fff;
+}
+/* 滚动条 */
+.scroll .mCSB_scrollTools{
+	opacity: 1;
+	width:32px;
+	height:386px;
+	margin-top:-10px;
+	margin-bottom:-10px;
+}
+.scroll .mCSB_scrollTools .mCSB_buttonUp{
+	background-image:url(../images/scrollup.png);
+	height:34px;
+	opacity: 1;
+}
+.scroll .mCSB_scrollTools .mCSB_draggerContainer{
+	margin-top:34px;
+	margin-bottom:40px;
+	background-image:url(../images/scrollcontainer.png);
+	background-repeat:repeat-y;
+}
+.scroll .mCSB_scrollTools .mCSB_dragger{
+	background-image:url(../images/scrollbar.png);
+	background-repeat:repeat-y;
+	width:20px;
+	margin-left:6px;
+}
+.scroll .mCSB_scrollTools .mCSB_dragger_bar{
+	display:none;
+}
+.scroll .mCSB_scrollTools .mCSB_buttonDown{
+	margin-top:-74px;
+	background-image:url(../images/scrolldown.png);
+	background-position:0;
+	height:34px;
+	width:32px;
+	opacity: 1;
+}
+.scroll_min .mCSB_scrollTools{
+	opacity: 1;
+	width:26px;
+	height:210px;
+	margin-top:-10px;
+	margin-bottom:-10px;
+}
+.scroll_min .mCSB_scrollTools .mCSB_buttonUp{
+	background-image:url(../images/scrollup_min.png);
+	height:26px;
+	opacity: 1;
+}
+.scroll_min .mCSB_scrollTools .mCSB_draggerContainer{
+	margin-top:26px;
+	margin-bottom:40px;
+	background-image:url(../images/scrollcontainer_min.png);
+	background-repeat:repeat-y;
+}
+.scroll_min .mCSB_scrollTools .mCSB_dragger{
+	background-image:url(../images/scrollbar_min.png);
+	background-repeat:repeat-y;
+	width:18px;
+	margin-left:4px;
+}
+.scroll_min .mCSB_scrollTools .mCSB_dragger_bar{
+	display:none;
+}
+.scroll_min .mCSB_scrollTools .mCSB_buttonDown{
+	margin-top:-74px;
+	background-image:url(../images/scrolldown_min.png);
+	background-position:0;
+	height:26px;
+	opacity: 1;
+}
+/*提示框*/
+#wtalert_content input{
+	display:block;
+	border:none;
+	padding:none;
+	margin:none;
+	outline:none;
+	background:rgba(255,255,255,0.5);
+}
+#chat_window{
+	position:absolute;
+	left:100px;
+	width:750px;
+	height:212px;
+	font-size:16px;
+}
+.bubble{
+	float:left;
+	width:750px;
+}
+.sender{
+	width:750px;
+	height:30px;
+	line-height:30px;
+	font-size:20px;
+	color:#fff;
+	text-align:right;
+	text-shadow:#000 1px 1px 1px;
+} 
+.chat_text{
+	background:rgba(255,255,255,0.5);
+	font-size:16px;
+	padding:5px;
+	border-radius:3px;
+	margin:0 20px;
+}
+.right_bubble *{
+	float:right;
+}
+.left_bubble *{
+	float:left;
+	text-align:left;
+}
+#chat_input{
+	display:block;
+	position:absolute;
+	left:100px;
+	top:320px;
+	height:60px;
+	width:750px;
+	font-size:16px;
+	resize:none;
+	border:none;
+	padding:none;
+	margin:none;
+	outline:none;
+	background:rgba(255,255,255,0.5);
+}
+#chat_send{
+	position:absolute;
+	right:150px;
+	bottom:70px;
 }

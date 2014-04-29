@@ -5,7 +5,7 @@ function Logger(){
 	this.nowTime;
 	this.log = function(data){
 		var d = new Date();
-		this.today = d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate();
+		this.today = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
 		this.nowTime = d.getHours()+":"+d.getMinutes()+":"+d.getSeconds(); 
 		var FileName = this.logURL+this.today+".log";
 		console.log(data);

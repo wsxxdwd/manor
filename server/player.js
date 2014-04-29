@@ -9,12 +9,16 @@ function Player(id,socket){
 	//玩家加入游戏
 	this.init = function(){
 		db.find("player",{_id:this.id},{password:0},function(data){
-			_this.so.emit("welcome",{info:data[0]});
 			_this.info = data[0];
+			_this.so.emit("welcome",{info:data[0]});
 			_this.so.emit("worldTime",{time:world.worldTime()});
-			_this.so.emit("worldMap",{map:world.map});
+			_this.so.emit("worldMap",{map:world.map,size:world.size});
+			var currentField = world.fieldXYtoId(data[0].location[0],data[0].location[1]);
+			world.setFieldPlayer(currentField,{id:_this.id,name:_this.info.name},1);
+			logger.log("玩家:"+_this.info.name+"加入了游戏")
 		});
 	}
+	
 	//玩家退出游戏
 	this.quit = function(){
 		for(v in playerList){
@@ -22,26 +26,139 @@ function Player(id,socket){
 				playerList.splice(v,1);
 			}
 		}
+		logger.log("玩家:"+_this.info.name+"退出了游戏")
+		var currentField = world.fieldXYtoId(this.info.location[0],this.info.location[1]);
+		world.setFieldPlayer(currentField,{id:_this.id,name:_this.info.name},2);
 	}
-	this.sendMail = function(msg){
-		var listener;
+	//发送邮件
+	this.sendMail = function(data){
 		var d = new Date();
-		var nowTime = d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate()+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds(); 
-		if(_this.mailHistory.length >= 20){
-			_this.mailHistory.shift();
-		}
-		_this.info.mailHistory.push({time:nowTime,from:"我",content:msg});
-		/* if(target == "world"){
-			this.cost(5);
-			this.so.broadcast.emit("worldMsg",{msg:msg,from:this.id,time:nowTime});
-			logger.log(socket.id+" say to world : "+msg)
-		}else{
-			if(u.$player(target)){
-				this.cost(5);
-				u.$player(target).so.emit("personalMsg",{msg:msg,from:this.id,time:nowTime});
+		var nowTime = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds(); 
+		
+		db.find("player",{_id:data.to},{mailHistory:1,name:1},function(playerInfo){
+			if(playerInfo.length){
+				if(_this.info.mailHistory.length >= 20){
+					_this.info.mailHistory.shift();
+				}
+				_this.info.mailHistory.push({time:nowTime,from:"我",to:playerInfo[0].name,title:data.title,content:data.msg});
+				playerInfo[0].mailHistory.push({time:nowTime,fromId:_this.id,from:_this.info.name,to:"我",title:data.title,content:data.msg});
+				_this.info.save();
+				playerInfo[0].save();
+				var player = u.$player(data.to);
+				if(player){
+					player.so.emit("newMail",{from:_this.info.name,title:data.title});//发送新邮件提醒
+					player.sendUpdate("mailHistory");
+				}
+				_this.sendUpdate("mailHistory");
+			}else{
+				console.log("无效的收信人");
 			}
-		}*/
+		});
 	} 
+	//雇佣
+	this.hire = function(unitInfo,callback){
+		var field = world.field(unitInfo.field);
+		if(this.info.team.length < this.info.leadership/3){
+			for(var i = 0;i < field.tavern.lansquenet.length;i++){
+				if(field.tavern.lansquenet[i].id == unitInfo.id){
+					if(this.cost(field.tavern.lansquenet[i].price)){//扣除价格
+						var unit = field.tavern.lansquenet.splice(i,1);
+						console.log(unit);
+						this.info.team.push(unit[0]);
+						console.log("雇佣军数量:"+field.tavern.lansquenet.length);
+						//从酒馆删除单位并添加到玩家队伍
+						this.so.emit("hireResult",{status:1,id:unitInfo.id});
+						this.sendUpdate("team","money");
+						this.info.save();
+						field.save();
+						return 1;
+					}else{
+						callback({status:0,msg:"资金不足"});
+						return 0;
+					}
+				}
+			}
+			callback({status:0,msg:"该单位不存在"});
+			return 0;
+		}else{
+			callback({status:0,msg:"已到达队伍上限"});
+			return 0;
+		}
+	}
+	//建造
+	this.construct = function(id,callback){
+		var field = world.field(this.info.base);
+		var building = u.$building(id);
+		if(field.buildings.length < 10){
+			//检验材料是否充足
+			var need = building.constructMaterial;
+			for(var i = 0;i<need.length;i++){
+				switch(need[i].type){
+					case "money":
+						if(this.info.money < need[i].num){
+							callback({status:0,msg:"金钱不足"});
+							return 0;
+						}
+						break;
+					case "log":
+						var condition = 0;
+						for(var j = 0;j<this.info.items.length;j++){
+							if(this.info.items[j].id == "" && this.info.items[j].num >= need[i].num){
+								//引号内是木头的id
+								condition = 1;
+							}
+						}
+						if(!condition){
+							callback({status:0,msg:"木材不足"});
+							return 0;
+						}
+						break;
+					case "rock":
+						var condition = 0;
+						for(var j = 0;j<this.info.items.length;j++){
+							if(this.info.items[j].id == "" && this.info.items[j].num >= need[i].num){
+								//引号内是石头的id
+								condition = 1;
+							}
+						}
+						if(!condition){
+							callback({status:0,msg:"石材不足"});
+							return 0;
+						}
+						break;
+				}
+			}
+			//能跑到这里说明材料够,再跑一次扣除所需材料
+			for(var i = 0;i<need.length;i++){
+				switch(need[i].type){
+					case "money":
+						this.cost(need[i].num)
+						break;
+					case "log":
+						this.reduceItem("",need[i].num);
+						break;
+					case "rock":
+						this.reduceItem("",need[i].num);
+						break;
+				}
+			}
+			//领地新增建筑
+			field.buildings.push({id:id,timer:0,status:"constructing"});
+			field.save();//更新领地
+			this.info.save();//更新玩家信息
+			this.so.emit("constructResult",{status:1,id:id});
+			this.sendUpdate("money","items");
+		}else{
+			callback({status:0,msg:"已到达建筑物上限"});
+			return 0;
+		}
+	}
+	this.move = function(tx,ty,fx,fy){
+		if(this.info.location[0] == fx&&this.info.location[1] == fy){
+			this.info.location = [tx,ty];
+			world.playerMove({id:this.id,name:this.info.name},tx,ty,fx,fy);
+		}
+	}
 	this.cost = function(num){
 		if(this.info.money >= num){
 			this.info.money -= num;
@@ -58,7 +175,6 @@ function Player(id,socket){
 		for(var v in this.info.items){
 			if(this.info.items[v].id == item){
 				this.info.items[v].num += num;//原有物品直接增加数量
-				this.update("items");
 				return 1;
 			}
 		}
@@ -71,6 +187,9 @@ function Player(id,socket){
 				//原有物品直接减去数量
 				if(this.info.items[v].num >= num){
 					this.info.items[v].num -= num;
+					if(this.info.items[v].num == 0){
+						this.info.items.splice(v,1);
+					}
 					return 1;
 				}else{
 					console.log("数量不足");
@@ -86,7 +205,7 @@ function Player(id,socket){
 			this.updateList.push(arguments[v]);
 		}
 		var info ={};
-		if(this.updateList == "all"){
+		if(this.updateList && this.updateList[0] == "all"){
 			info = this.info;
 		}else{
 			for(var v in this.updateList){
@@ -98,42 +217,8 @@ function Player(id,socket){
 	this.loop = function(){
 		
 	}
-	this.updatedb = function(param){
-		switch(param){
-			case "name":
-				db.update("player",{_id:this.id},{name:this.info.name},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了昵称")});
-			break;
-			case "manor":
-				db.update("player",{_id:this.id},{manor:this.info.manor},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了领地")});
-				break;
-			case "base":
-				db.update("player",{_id:this.id},{base:this.info.base},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了封地")});
-				break;
-			case "friends":
-				db.update("player",{_id:this.id},{friends:this.info.friends},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了好友信息")});
-				break;
-			case "money":
-				db.update("player",{_id:this.id},{money:this.info.money},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了金龙币")});
-				break;
-			case "alignment":
-				db.update("player",{_id:this.id},{alignment:this.info.alignment},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了阵营")});
-				break;
-			case "items":
-				db.update("player",{_id:this.id},{items:this.info.items},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了物品")});
-				break;
-			case "location":
-				db.update("player",{_id:this.id},{location:this.info.location},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了地点")});
-				break;
-			case "team":
-				db.update("player",{_id:this.id},{team:this.info.team},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了队伍")});
-				break;
-			case "leadership":
-				db.update("player",{_id:this.id},{leadership:this.info.leadership},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了统御值")});
-				break;
-			case "mailHistory":
-				db.update("player",{_id:this.id},{mailHistory:this.info.mailHistory},function(res){logger.log("玩家 "+this.info.name+"("+this.info.id+")"+" 更新了邮件历史")});
-				break;
-		}
+	this.updatedb = function(){
+		this.info.save();
 	}
 }
 module.exports = Player;

@@ -6,6 +6,7 @@
 var express = require('express');
 var routes = require('./routes/index');
 var user = require('./routes/user');
+var admin = require('./routes/admin');
 var dev = require('./dev/admin');
 var http = require('http');
 var path = require('path');
@@ -43,15 +44,23 @@ app.get('/:page',filter.authorize,function(req,res,next){
 		res.end();
 	}
 });
+app.get('/:page',filter.authorizeAdmin,function(req,res,next){
+	if(routes[req.params.page]){
+		routes[req.params.page](req,res,next);
+	}else{
+		res.status(404);
+		res.end();
+	}
+});
 app.get('/', routes.index);
 app.get('/game',routes.game);
-app.get('/admin/index',routes.admin);
+app.get('/admin/index',routes.adminLogin);
+app.get('/admin/admin',routes.admin);
 
 app.post('/login', user.login);
+app.post('/adminLogin', admin.login);
 app.post('/logout', user.logout);
 app.post('/register', user.register);
-app.post('/admin/data', dev.data);
-app.post('/admin/edit', dev.edit);
 
 
 var server = http.createServer(app).listen(app.get('port'), function(){

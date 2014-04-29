@@ -7,17 +7,21 @@ block content
 	#main
 		#outter
 			#login.pannel
-				h2 登录
+				.header 登   录
 				label(for="username") 用户名:
 				.input_border
 					input#username
 				label(for="password") 密码:
 				.input_border
 					input#password(type="password")
-				div#login_btn 进入游戏
 				a#to_register 去注册
+				.alert
+				div#login_btn 进入游戏
 			#register.pannel
-				h2 注册
+				.header 注   册
+				label(for="code") 邀请码:
+				.input_border
+					input#code
 				label(for="reg_username") 用户名:
 				.input_border
 					input#reg_username
@@ -27,5 +31,7 @@ block content
 				label(for="reg_password_c") 确认密码:
 				.input_border
 					input#reg_password_c(type="password")
-				div#register_btn 注册用户
 				a#to_login 返回登录
+				.alert
+				div#register_btn 注册用户
+				

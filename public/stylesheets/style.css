@@ -1,12 +1,17 @@
+@font-face
+{
+	font-family: myFirstFont;
+	src: url('FZY1JW.TTF'),
+		 url('Sansation_Light.eot'); /* IE9+ */
+}
 body {
-	font-family: "微软雅黑",'Arial','Tahoma','Verdana','helvetica','microsoft yahei',"SimHei","黑体",'sans-serif';
+	font-family: "微软雅黑",'Arial','Tahoma','Verdana','helvetica',"SimHei","黑体",sans-serif;
 	color: #aaa;
 	font-size: 100%;
 	margin: auto;
 	height:100%;
 	letter-spacing: .08em;
 }
-
 a {
   color: #00B7FF;
   cursor:pointer;
@@ -30,4 +35,5 @@ a {
 #footer p{
 	width:100%;
 	text-align:center;
+	line-height:50px;
 }

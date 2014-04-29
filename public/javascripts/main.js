@@ -1,53 +1,17 @@
-var gameURL = '127.0.0.1:3000';
+var gameURL = 'http://127.0.0.1:3000';
 var socket = io.connect(gameURL);
+
 window.onload = function(){
-	$("#tipBox").modal();
-	$("#tipBox").modal("hide");
-	//退出按钮
-	$("#logout").bind("click",function(){game.logout();})
-	$("#mail").bind("click",function(){
-		$(".page").hide();
-		mail_page();
-		$("#mail_page").show();
-	})
-	$("#manor").bind("click",function(){
-		$(".page").hide();
-		manor_page(game.player.manor);
-		$("#manor_page").show();
-	});
-	$("#field").bind("click",function(){
-		$(".page").hide();
-		field_page(game.player.base);
-		$("#field_page").show();
-	});
-	$("#item").bind("click",function(){
-		$(".page").hide();
-		item_page();
-		$("#item_page").show();
-	})
-	//领地选项二级导航
-	$("#manor_nav li").bind("click",function(){manor_info($(this).data("key"));})//封地选项二级导航
-	$("#field_nav li").bind("click",function(){field_info($(this).data("key"));})
 	
-	$("#sendMail").bind("click",function(){return sendMail();})
-	//关闭对话框
-	$("body").on("click",".close_tip",function(){
-		$("#tipBox").modal("hide");
-	});
-	//完成任务按钮
-	$("#field_info").on("click","#quest_done",function(){
-		socket.emit("completeQuest",{fieldId:game.field._id,playerId:game.uid})
-	});
-	//选择邮件接收人
-	$("#mail_page").on("click",".friendLink",function(){
-		$("#mailTo").html($(this).html());
-		$("#mailTo").attr("name",$(this).data("id"));
-	});
+	$('.gameLayer').hide();
 	game = new Game();
-	
-	game.init();
-	
-	game.gameListener();
+	loader.init();
+	for(var v in game.imageURL){
+		game.images[v] = loader.loadImage(game.imageURL[v]);
+	}
+	for(var v in game.soundURL){
+		game.sounds[v] = loader.loadSound(game.soundURL[v]);
+	}
 }
 //邮件界面
 function mail_page(){
